@@ -3,25 +3,25 @@
         <h2>Default input:</h2>
         <section>
         <div>
-            <input type="text" :value="state.time" id="time-field" @input="onChange(onTimeChange($event, value))">    
+            <input type="text" :value="state.time" id="time-field" @input="onChange(onTimeChange)">    
         </div>
         </section>
         <h2>Show seconds:</h2>
         <section>
         <div>
-            <input type="text" :value="state.timeSeconds" id="time-field" @input="onChange(onTimeChange($event, value))">    
+            <input type="text" :value="state.timeSeconds" id="time-field" @input="onChange(onTimeChange)">    
         </div>
         </section>
         <h2>Custom colon:</h2>
         <section>
         <div>
-            <input type="text" :value="state.timeSecondsCustomColon" id="time-field" @input="onChange(onTimeChange($event, value))">    
+            <input type="text" :value="state.timeSecondsCustomColon" id="time-field" @input="onChange(onTimeChange)">    
         </div>
         </section>
         <h2>Vue Material-UI:</h2>
         <section>
         <div>
-            <input type="text" :value="state.timeSeconds" id="time-field" @input="onChange(onTimeChange($event, value))">    
+            <input type="text" :value="state.timeSeconds" id="time-field" @input="onChange(onTimeChange)">    
         </div>
         </section>   
       </section>
@@ -44,7 +44,7 @@ export default {
             }
         }
     },
-    methods: {
+    computed: {
         onTimeChange: function(event, value) {
             const newTime = value.replace(/-/g, ':');
             this.time = newTime.substr(0, 5);
