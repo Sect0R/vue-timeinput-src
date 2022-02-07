@@ -45,8 +45,8 @@ export default {
         }
     },
     computed: {
-        onTimeChange: function(event, value) {
-            const newTime = value.replace(/-/g, ':');
+        onTimeChange: function(event) {
+            const newTime = event.target.value.replace(/-/g, ':');
             this.time = newTime.substr(0, 5);
             this.timeSeconds = newTime.padEnd(8, this.state.timeSeconds.substr(5, 3));
             this.timeSecondsCustomColon = timeSeconds.replace(/:/g, '-');
