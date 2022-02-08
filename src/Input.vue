@@ -1,55 +1,70 @@
 <template>
-<section class="container">
-        <h2>Default input:</h2>
-        <section>
         <div>
-            <input type="text" :value="state.time" id="time-field" @input="onChange(onTimeChange)">    
+            <input type="text" :value="stateValue" :placeholder="defaultValue" id="time-field" @keyup="onChange($event, onTimeChange($event, value))">    
         </div>
-        </section>
-        <h2>Show seconds:</h2>
-        <section>
-        <div>
-            <input type="text" :value="state.timeSeconds" id="time-field" @input="onChange(onTimeChange)">    
-        </div>
-        </section>
-        <h2>Custom colon:</h2>
-        <section>
-        <div>
-            <input type="text" :value="state.timeSecondsCustomColon" id="time-field" @input="onChange(onTimeChange)">    
-        </div>
-        </section>
-        <h2>Vue Material-UI:</h2>
-        <section>
-        <div>
-            <input type="text" :value="state.timeSeconds" id="time-field" @input="onChange(onTimeChange)">    
-        </div>
-        </section>   
-      </section>
 </template>
 
 <script>
 
+const DEFAULT_COLON = ':';
+const DEFAULT_VALUE_SHORT = `00${DEFAULT_COLON}00`;
+const DEFAULT_VALUE_FULL = `00${DEFAULT_COLON}00${DEFAULT_COLON}00`;
+
 export default {
-    props: {
-        onChange: {
-            type: Function
-        }
-    },
+    props: ["stateValue", "onTimeChange"],
     data() {
         return {
-            state: {
-                time: '12:34',
-                timeSeconds: '12:34:56',
-                timeSecondsCustomColon: '12-34-56'
-            }
+            value: '',
+            showSecond: true,
+            defaultValue: DEFAULT_VALUE_FULL,
+            colon:DEFAULT_COLON,
+            cursorPosition: 0
         }
     },
-    computed: {
-        onTimeChange: function(event) {
-            const newTime = event.target.value.replace(/-/g, ':');
-            this.time = newTime.substr(0, 5);
-            this.timeSeconds = newTime.padEnd(8, this.state.timeSeconds.substr(5, 3));
-            this.timeSecondsCustomColon = timeSeconds.replace(/:/g, '-');
+    methods: {
+        isNumber(value) {
+            const number = Number(value);
+            return !isNaN(number) && String(value) === String(number);
+        },
+        formatTimeItem(value) {
+            return `${value || ''}00`.substr(0, 2);
+        },
+        validateTimeAndCursor(showSecond = false, value = '', defaultValue = '', colon = DEFAULT_COLON, cursorPosition = 0) {
+            const [oldH, oldM, oldS] = defaultValue.split(colon);
+
+            let newCursorPosition = cursorPosition;
+            let [newH, newM, newS] = value.split(colon);
+
+            newH = this.formatTimeItem(newH);
+            if (Number(newH[0]) > 2) {
+                newH = oldH;
+                newCursorPosition -= 1;
+            } else if (Number(newH[0]) === 2) {
+                if(Number(oldH[0]) === 2 && Number(newH[1] > 3)) {
+                    newH = `2${oldH[1]}`;
+                    newCursorPosition -= 2;
+                } else if (Number(newH[1]) > 3) {
+                    newH = '23';
+                }
+            }
+
+            newM = this.formatTimeItem(newM);
+            if (Number(newM[0]) > 5) {
+                newM = oldM;
+                newCursorPosition -= 1;
+            }
+
+            if (showSecond) {
+                newS = this.formatTimeItem(newS);
+                if (Number(newS[0]) > 5) {
+                    newS = oldS;
+                    newCursorPosition -= 1;
+                }
+            }
+
+            const validatedValue = showSecond ? `${newH}${colon}${newM}${colon}${newS}` : `${newH}${colon}${newM}`;
+
+            return [validatedValue, newCursorPosition];
         }
     }
 }
