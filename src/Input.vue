@@ -1,83 +1,194 @@
 <template>
-        <div>
-            <input type="text" :value="stateValue" :placeholder="defaultValue" id="time-field" @keyup="onChange($event, onTimeChange($event, value))">    
-        </div>
+    <div class="input-block">
+        <input 
+        type="text" 
+        ref="input" 
+        id="time-field"
+        v-model="value"
+        @paste.prevent
+        @keypress="onChange($event)" 
+        @keydown.delete="removeValue($event)"
+        @focus="$event.preventDefault()"
+        @click="focused($event)"
+        :class="{ width_input: showSeconds }" 
+        autocomplete="off">
+        <button class="second-button" @click="showSecond($event)">Show seconds</button>
+    </div> 
 </template>
 
 <script>
 
-const DEFAULT_COLON = ':';
-const DEFAULT_VALUE_SHORT = `00${DEFAULT_COLON}00`;
-const DEFAULT_VALUE_FULL = `00${DEFAULT_COLON}00${DEFAULT_COLON}00`;
-
 export default {
-    props: ["stateValue", "onTimeChange"],
-    data() {
+    data() { 
         return {
-            value: '',
-            showSecond: true,
-            defaultValue: DEFAULT_VALUE_FULL,
-            colon:DEFAULT_COLON,
-            cursorPosition: 0
+            value: '00:00',
+            showSeconds: false
         }
     },
     methods: {
-        isNumber(value) {
-            const number = Number(value);
-            return !isNaN(number) && String(value) === String(number);
+        focused(event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            if(event.target.value === '00:00') {
+                event.target.setSelectionRange(0,0)
+            }
         },
-        formatTimeItem(value) {
-            return `${value || ''}00`.substr(0, 2);
+        showSecond(event) {
+            this.showSeconds = !this.showSeconds
+            if(this.showSeconds) {
+                return this.value = '00:00:00'
+            }else {
+                this.value = '00:00'
+            }
+            return this.showSeconds;
         },
-        validateTimeAndCursor(showSecond = false, value = '', defaultValue = '', colon = DEFAULT_COLON, cursorPosition = 0) {
-            const [oldH, oldM, oldS] = defaultValue.split(colon);
+        onChange(event) {
+            event.preventDefault()
+            const input = this.$refs.input;
 
-            let newCursorPosition = cursorPosition;
-            let [newH, newM, newS] = value.split(colon);
+            let inputValue = input.value;
+            let value = inputValue.split('');
 
-            newH = this.formatTimeItem(newH);
-            if (Number(newH[0]) > 2) {
-                newH = oldH;
-                newCursorPosition -= 1;
-            } else if (Number(newH[0]) === 2) {
-                if(Number(oldH[0]) === 2 && Number(newH[1] > 3)) {
-                    newH = `2${oldH[1]}`;
-                    newCursorPosition -= 2;
-                } else if (Number(newH[1]) > 3) {
-                    newH = '23';
+            const positionCursor = input.selectionEnd;
+            
+            let newPositionCursor = positionCursor + 1;
+
+            if(positionCursor === 0 && event.key <= 2) {
+                value[positionCursor] = event.key
+                input.value = value.join('')
+                input.setSelectionRange(1,1)
+                return input.value 
+            } else if (positionCursor === 0 && event.key > 2) {
+                value[positionCursor] = 0
+                value[newPositionCursor] = event.key
+                input.value = value.join('')
+                input.setSelectionRange(3,3)
+                return input.value 
+            }
+
+            if(positionCursor === 1 && event.key > 3){
+                return 
+            } else if(positionCursor === 1 && event.key <= 3) {
+                value[positionCursor] = event.key
+                input.value = value.join('')
+                input.setSelectionRange(3,3)
+                return input.value
+            }
+
+            if(positionCursor === 3  && event.key <= 5 ) {
+                value[positionCursor] = event.key
+                input.value = value.join('')
+                input.setSelectionRange(newPositionCursor,newPositionCursor)
+                return input.value
+            } else if (positionCursor === 3 && event.key > 5) {
+                value[positionCursor] = 0
+                value[newPositionCursor] = event.key
+                input.value = value.join('')
+                input.setSelectionRange(newPositionCursor,newPositionCursor)
+                return input.value
+            }
+          
+            if(positionCursor ===  5 && event.key <= 5 ) {
+                value[newPositionCursor] = event.key
+                input.value = value.join('')
+                input.setSelectionRange((newPositionCursor + 1 ),(newPositionCursor + 1 ))
+                return input.value
+            } else if (positionCursor  === 5 && event.key > 5) {
+                value[newPositionCursor] = 0
+                value[newPositionCursor + 1] = event.key
+                input.value = value.join('')
+                input.setSelectionRange((newPositionCursor + 1 ),(newPositionCursor + 1 ))
+                return input.value
+            }
+            
+            if(positionCursor === 4) {
+                value = inputValue.split('');
+                value[4] = event.key
+                input.value = value.join('')
+                if(!this.showSeconds){
+                      input.setSelectionRange(0,0)    
+                } else {
+                     input.setSelectionRange(5,5)    
                 }
+                return input.value
+            }
+            
+            if(positionCursor === 0 && event.key > 2) {
+                value[0] = 0
+                input.value = value.join('')
+                input.setSelectionRange(1,1)
+                return input.value 
+            } else if(positionCursor === 1 && event.key > 3){
+                value[1] = 0
+                input.value = value.join('')
+                input.setSelectionRange(3,3)
+                return input.value
+            }else if(positionCursor === 3 && event.key > 5){
+                value[4] = 0
+                input.value = value.join('')
+                input.setSelectionRange(4,4)
+                return input.value
             }
 
-            newM = this.formatTimeItem(newM);
-            if (Number(newM[0]) > 5) {
-                newM = oldM;
-                newCursorPosition -= 1;
+            if(positionCursor === 7 && event.key <= 9) {
+                value[7] = event.key
+                input.value = value.join('')
+                input.setSelectionRange(8,8)
+                return input.value
+            } else if(positionCursor === 8) {
+                input.setSelectionRange(0,0)
             }
 
-            if (showSecond) {
-                newS = this.formatTimeItem(newS);
-                if (Number(newS[0]) > 5) {
-                    newS = oldS;
-                    newCursorPosition -= 1;
-                }
+            
+        },
+        removeValue(event) {
+            event.preventDefault()
+            const input = this.$refs.input
+
+            let inputValue = input.value
+            let value = inputValue.split('');
+
+            let position = input.selectionEnd;
+            
+
+            if(position !== 0 && value[position - 1] !== ':') {
+                let newPosition = position - 1;
+                value[newPosition] = 0
+                input.value = value.join('')
+                input.setSelectionRange(newPosition,newPosition)
+                return input.value 
+            }  else {
+                let newPosition = position - 1;
+                input.setSelectionRange(newPosition,newPosition)
             }
-
-            const validatedValue = showSecond ? `${newH}${colon}${newM}${colon}${newS}` : `${newH}${colon}${newM}`;
-
-            return [validatedValue, newCursorPosition];
-        }
-    }
+        }    
+    }       
 }
 </script>
 
 <style>
     #time-field {
         text-align: center;
-        font-size: 20px;
-        max-width: 100px;
+        outline: none;
+        font-size: 30px;
+        max-width: 90px;
         height: 35px;
+        margin-top: 30px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        border: 3px solid #000;
     }
-    .container {
-        text-align: center;
+    .width_input {
+        max-width: 125px !important;
+    }
+    #time-field:focus {
+       border: 3px solid rgb(8 8 8 / 83%);
+       box-shadow: 5px 3px 4px 2px grey; 
+    }
+    .input-block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 </style>
