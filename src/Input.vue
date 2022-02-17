@@ -8,7 +8,6 @@
         @paste.prevent
         @keypress="onChange($event)" 
         @keydown.delete="removeValue($event)"
-        :class="{ width_input: showSeconds }"
         autocomplete="off">
         <button class="second-button" @click="showSecond($event)">Show seconds</button>
     </div> 
@@ -174,27 +173,4 @@ export default {
 </script>
 
 <style>
-    #time-field {
-        text-align: center;
-        outline: none;
-        font-size: 30px;
-        max-width: 90px;
-        height: 35px;
-        margin-top: 30px;
-        margin-bottom: 20px;
-        border-radius: 5px;
-        border: 3px solid #000;
-    }
-    .width_input {
-        max-width: 125px !important;
-    }
-    #time-field:focus {
-       border: 3px solid rgb(8 8 8 / 83%);
-       box-shadow: 5px 3px 4px 2px grey; 
-    }
-    .input-block {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
 </style>
