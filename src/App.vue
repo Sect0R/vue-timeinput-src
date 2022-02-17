@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <vue-input></vue-input>
+    <vue-input :value="value"></vue-input>
   </div>
 </template>
 
@@ -8,6 +8,11 @@
 import Input from "./Input.vue";
 export default {
   name: 'app',
+  data() {
+    return{
+      value: '00:00',
+    }
+  },
   components: {
     vueInput: Input
   }

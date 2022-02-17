@@ -9,8 +9,7 @@
         @keypress="onChange($event)" 
         @keydown.delete="removeValue($event)"
         @focus="$event.preventDefault()"
-        @click="focused($event)"
-        :class="{ width_input: showSeconds }" 
+        :class="{ width_input: showSeconds }"
         autocomplete="off">
         <button class="second-button" @click="showSecond($event)">Show seconds</button>
     </div> 
@@ -19,21 +18,14 @@
 <script>
 
 export default {
+    props:['value'],
     data() { 
         return {
-            value: '00:00',
-            showSeconds: false
+            showSeconds: false,
+            length: 0
         }
     },
     methods: {
-        focused(event) {
-            event.preventDefault();
-            event.stopPropagation();
-
-            if(event.target.value === '00:00') {
-                event.target.setSelectionRange(0,0)
-            }
-        },
         showSecond(event) {
             this.showSeconds = !this.showSeconds
             if(this.showSeconds) {
@@ -50,21 +42,32 @@ export default {
             let inputValue = input.value;
             let value = inputValue.split('');
 
-            const positionCursor = input.selectionEnd;
-            
+            if(event.keyCode === (32 || 13)) {
+                return 
+            }
+
+            let positionCursor = input.selectionEnd;
             let newPositionCursor = positionCursor + 1;
+
+            if((positionCursor === 5 && !this.showSeconds) || positionCursor === 8) {
+                return
+            }
 
             if(positionCursor === 0 && event.key <= 2) {
                 value[positionCursor] = event.key
                 input.value = value.join('')
-                input.setSelectionRange(1,1)
+                input.setSelectionRange(newPositionCursor,newPositionCursor)
                 return input.value 
             } else if (positionCursor === 0 && event.key > 2) {
                 value[positionCursor] = 0
                 value[newPositionCursor] = event.key
                 input.value = value.join('')
-                input.setSelectionRange(3,3)
+                input.setSelectionRange((newPositionCursor + 2),(newPositionCursor + 2))
                 return input.value 
+            }
+
+            if(positionCursor === 2){
+                input.setSelectionRange(newPositionCursor,newPositionCursor) 
             }
 
             if(positionCursor === 1 && event.key > 3){
@@ -72,7 +75,7 @@ export default {
             } else if(positionCursor === 1 && event.key <= 3) {
                 value[positionCursor] = event.key
                 input.value = value.join('')
-                input.setSelectionRange(3,3)
+                input.setSelectionRange((newPositionCursor + 1),(newPositionCursor + 1))
                 return input.value
             }
 
@@ -92,7 +95,7 @@ export default {
             if(positionCursor ===  5 && event.key <= 5 ) {
                 value[newPositionCursor] = event.key
                 input.value = value.join('')
-                input.setSelectionRange((newPositionCursor + 1 ),(newPositionCursor + 1 ))
+                input.setSelectionRange((newPositionCursor + 1),(newPositionCursor + 1))
                 return input.value
             } else if (positionCursor  === 5 && event.key > 5) {
                 value[newPositionCursor] = 0
@@ -101,46 +104,37 @@ export default {
                 input.setSelectionRange((newPositionCursor + 1 ),(newPositionCursor + 1 ))
                 return input.value
             }
-            
-            if(positionCursor === 4) {
-                value = inputValue.split('');
-                value[4] = event.key
+
+            if(positionCursor === 4) {             
+                value[positionCursor] = event.key
                 input.value = value.join('')
                 if(!this.showSeconds){
-                      input.setSelectionRange(0,0)    
+                    input.setSelectionRange(5,5)
+                    return input.value
                 } else {
-                     input.setSelectionRange(5,5)    
+                     input.setSelectionRange(newPositionCursor,newPositionCursor)    
                 }
                 return input.value
+            } else if(positionCursor === 5) {
+                return
             }
-            
-            if(positionCursor === 0 && event.key > 2) {
-                value[0] = 0
+            if(positionCursor === 6 && event.key <= 5) {
+                value[positionCursor] = event.key
                 input.value = value.join('')
-                input.setSelectionRange(1,1)
-                return input.value 
-            } else if(positionCursor === 1 && event.key > 3){
-                value[1] = 0
-                input.value = value.join('')
-                input.setSelectionRange(3,3)
-                return input.value
-            }else if(positionCursor === 3 && event.key > 5){
-                value[4] = 0
-                input.value = value.join('')
-                input.setSelectionRange(4,4)
-                return input.value
-            }
-
-            if(positionCursor === 7 && event.key <= 9) {
-                value[7] = event.key
-                input.value = value.join('')
-                input.setSelectionRange(8,8)
+                input.setSelectionRange(newPositionCursor,newPositionCursor)
                 return input.value
             } else if(positionCursor === 8) {
                 input.setSelectionRange(0,0)
             }
 
-            
+            if(positionCursor === 7) {
+                value[positionCursor] = event.key
+                input.value = value.join('')
+                input.setSelectionRange(newPositionCursor,newPositionCursor)
+                return input.value
+            } else if(positionCursor === 8) {
+                input.setSelectionRange(0,0)
+            }
         },
         removeValue(event) {
             event.preventDefault()
@@ -148,19 +142,31 @@ export default {
 
             let inputValue = input.value
             let value = inputValue.split('');
-
             let position = input.selectionEnd;
-            
 
-            if(position !== 0 && value[position - 1] !== ':') {
+            if((position === 5 && !this.showSeconds && event.key === 'Delete') || (position === 8 && event.key === 'Delete')) {
+                return
+            }
+
+            if(event.key === 'Backspace' && position !== 0 && value[position - 1] !== ':') {   
                 let newPosition = position - 1;
                 value[newPosition] = 0
                 input.value = value.join('')
                 input.setSelectionRange(newPosition,newPosition)
-                return input.value 
-            }  else {
+                return input.value   
+            }else if(event.key === 'Delete' && value[position] !== ':') {   
+                let newPosition = position - 1;
+                input.setSelectionRange((newPosition + 1),(newPosition + 1))
+                value[newPosition + 1] = 0
+                input.value = value.join('')
+                input.setSelectionRange((newPosition + 2),(newPosition + 2))
+                return input.value   
+            }else if (event.key === 'Backspace' && value[position + 1] !== ':'){
                 let newPosition = position - 1;
                 input.setSelectionRange(newPosition,newPosition)
+            }else if (event.key === 'Delete' && value[position - 1] !== ':'){
+                let newPosition = position + 1;
+                return input.setSelectionRange(newPosition,newPosition)
             }
         }    
     }       
