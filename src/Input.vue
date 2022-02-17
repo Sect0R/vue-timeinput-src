@@ -4,11 +4,10 @@
         type="text" 
         ref="input" 
         id="time-field"
-        v-model="value"
+        v-model="numberValue"
         @paste.prevent
         @keypress="onChange($event)" 
         @keydown.delete="removeValue($event)"
-        @focus="$event.preventDefault()"
         :class="{ width_input: showSeconds }"
         autocomplete="off">
         <button class="second-button" @click="showSecond($event)">Show seconds</button>
@@ -21,6 +20,7 @@ export default {
     props:['value'],
     data() { 
         return {
+            numberValue: this.value,
             showSeconds: false,
             length: 0
         }
@@ -29,9 +29,9 @@ export default {
         showSecond(event) {
             this.showSeconds = !this.showSeconds
             if(this.showSeconds) {
-                return this.value = '00:00:00'
+                return this.numberValue = '00:00:00'
             }else {
-                this.value = '00:00'
+                this.numberValue = '00:00'
             }
             return this.showSeconds;
         },
@@ -138,9 +138,9 @@ export default {
         },
         removeValue(event) {
             event.preventDefault()
-            const input = this.$refs.input
+            const input = this.$refs.input;
 
-            let inputValue = input.value
+            let inputValue = input.value;
             let value = inputValue.split('');
             let position = input.selectionEnd;
 
