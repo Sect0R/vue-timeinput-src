@@ -4,7 +4,7 @@
         type="text" 
         ref="input" 
         id="time-field"
-        v-model="value"
+        v-model="numberValue"
         @paste.prevent
         @keypress="onChange($event)" 
         @keydown.delete="removeValue($event)"
@@ -21,6 +21,7 @@ export default {
     props:['value'],
     data() { 
         return {
+            numberValue: this.value,
             showSeconds: false,
             length: 0
         }
@@ -29,9 +30,9 @@ export default {
         showSecond(event) {
             this.showSeconds = !this.showSeconds
             if(this.showSeconds) {
-                return this.value = '00:00:00'
+                return this.numberValue = '00:00:00'
             }else {
-                this.value = '00:00'
+                this.numberValue = '00:00'
             }
             return this.showSeconds;
         },
