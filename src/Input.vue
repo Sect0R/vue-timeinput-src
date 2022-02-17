@@ -21,7 +21,6 @@ export default {
         return {
             numberValue: this.value,
             showSeconds: false,
-            length: 0
         }
     },
     methods: {
@@ -117,11 +116,16 @@ export default {
             } else if(positionCursor === 5) {
                 return
             }
+
             if(positionCursor === 6 && event.key <= 5) {
                 value[positionCursor] = event.key
                 input.value = value.join('')
                 input.setSelectionRange(newPositionCursor,newPositionCursor)
                 return input.value
+            } else if (positionCursor === 6 && event.key > 5) {
+                value[newPositionCursor] = event.key
+                input.value = value.join('')
+                input.setSelectionRange(newPositionCursor,newPositionCursor)
             } else if(positionCursor === 8) {
                 input.setSelectionRange(0,0)
             }
