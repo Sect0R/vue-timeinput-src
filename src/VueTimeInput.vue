@@ -129,7 +129,8 @@ export default {
 
       if (
         (positionCursor === 5 && !this.showSeconds && keyValue === 'Delete') ||
-        (positionCursor === 8 && keyValue === 'Delete')
+        (positionCursor === 8 && keyValue === 'Delete') ||
+        (positionCursor === 0 && keyValue === 'Backspace')
       ) {
         return;
       }
