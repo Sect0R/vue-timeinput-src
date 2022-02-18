@@ -8,6 +8,7 @@
         @paste.prevent
         @keypress="onChange($event)" 
         @keydown.delete="removeValue($event)"
+        maxlength=""
         autocomplete="off">
         <button class="second-button" @click="showSecond($event)">Show seconds</button>
     </div> 
@@ -16,11 +17,20 @@
 <script>
 
 export default {
-    props:['value'],
+    model: {
+        prop: 'value',
+        event: 'changeTime',
+  },
+    props: {
+    value: {
+      type: String,
+      default: null,
+    },
+  },
     data() { 
         return {
             numberValue: this.value,
-            showSeconds: false,
+            showSeconds: false
         }
     },
     methods: {
@@ -43,7 +53,7 @@ export default {
             if(event.keyCode === (32 || 13)) {
                 return 
             }
-
+            
             let positionCursor = input.selectionEnd;
             let newPositionCursor = positionCursor + 1;
 
@@ -55,64 +65,67 @@ export default {
                 value[positionCursor] = event.key
                 input.value = value.join('')
                 input.setSelectionRange(newPositionCursor,newPositionCursor)
-                return input.value 
+                this.$emit('changeTime', input.value);
             } else if (positionCursor === 0 && event.key > 2) {
                 value[positionCursor] = 0
                 value[newPositionCursor] = event.key
                 input.value = value.join('')
                 input.setSelectionRange((newPositionCursor + 2),(newPositionCursor + 2))
-                return input.value 
+                this.$emit('changeTime', input.value);
             }
 
             if(positionCursor === 2){
                 input.setSelectionRange(newPositionCursor,newPositionCursor) 
             }
 
-            if(positionCursor === 1 && event.key > 3){
-                return 
+            if(positionCursor === 1 && event.key > 3 && value[0] < 2){
+                value[positionCursor] = event.key
+                input.value = value.join('')
+                input.setSelectionRange((newPositionCursor + 1),(newPositionCursor + 1))
+                this.$emit('changeTime', input.value); 
             } else if(positionCursor === 1 && event.key <= 3) {
                 value[positionCursor] = event.key
                 input.value = value.join('')
                 input.setSelectionRange((newPositionCursor + 1),(newPositionCursor + 1))
-                return input.value
+                this.$emit('changeTime', input.value);
             }
 
             if(positionCursor === 3  && event.key <= 5 ) {
                 value[positionCursor] = event.key
                 input.value = value.join('')
                 input.setSelectionRange(newPositionCursor,newPositionCursor)
-                return input.value
+                this.$emit('changeTime', input.value);
             } else if (positionCursor === 3 && event.key > 5) {
                 value[positionCursor] = 0
                 value[newPositionCursor] = event.key
                 input.value = value.join('')
-                input.setSelectionRange(newPositionCursor,newPositionCursor)
-                return input.value
+                input.setSelectionRange((newPositionCursor + 1),(newPositionCursor + 1))
+                this.$emit('changeTime', input.value);
             }
           
             if(positionCursor ===  5 && event.key <= 5 ) {
                 value[newPositionCursor] = event.key
                 input.value = value.join('')
                 input.setSelectionRange((newPositionCursor + 1),(newPositionCursor + 1))
-                return input.value
+                this.$emit('changeTime', input.value);
             } else if (positionCursor  === 5 && event.key > 5) {
                 value[newPositionCursor] = 0
                 value[newPositionCursor + 1] = event.key
                 input.value = value.join('')
                 input.setSelectionRange((newPositionCursor + 1 ),(newPositionCursor + 1 ))
-                return input.value
+                this.$emit('changeTime', input.value);
             }
 
-            if(positionCursor === 4) {             
+            if(positionCursor === 4 && Number(event.key)) {             
                 value[positionCursor] = event.key
                 input.value = value.join('')
                 if(!this.showSeconds){
                     input.setSelectionRange(5,5)
-                    return input.value
+                    this.$emit('changeTime', input.value);
                 } else {
                      input.setSelectionRange(newPositionCursor,newPositionCursor)    
                 }
-                return input.value
+                this.$emit('changeTime', input.value);
             } else if(positionCursor === 5) {
                 return
             }
@@ -121,7 +134,7 @@ export default {
                 value[positionCursor] = event.key
                 input.value = value.join('')
                 input.setSelectionRange(newPositionCursor,newPositionCursor)
-                return input.value
+                this.$emit('changeTime', input.value);
             } else if (positionCursor === 6 && event.key > 5) {
                 value[newPositionCursor] = event.key
                 input.value = value.join('')
@@ -130,11 +143,11 @@ export default {
                 input.setSelectionRange(0,0)
             }
 
-            if(positionCursor === 7) {
+            if(positionCursor === 7 && Number(event.key)) {
                 value[positionCursor] = event.key
                 input.value = value.join('')
                 input.setSelectionRange(newPositionCursor,newPositionCursor)
-                return input.value
+                this.$emit('changeTime', input.value);
             } else if(positionCursor === 8) {
                 input.setSelectionRange(0,0)
             }

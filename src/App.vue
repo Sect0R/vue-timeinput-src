@@ -1,6 +1,9 @@
 <template>
   <div id="app">
-    <vue-input :value="value"></vue-input>
+    <vue-time-input v-model="value"></vue-time-input>
+    <button class="second-button" @click="print">
+      Show  vc bcb
+    </button>
   </div>
 </template>
 
@@ -14,8 +17,13 @@ export default {
     }
   },
   components: {
-    vueInput: Input
-  }
+    VueTimeInput: Input
+  },
+  methods: {
+    print() {
+      console.log(this.value);
+    },
+  },
 }
 </script>
 
