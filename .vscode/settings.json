@@ -1,0 +1,18 @@
+{
+    "editor.fontSize": 16,
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.autoClosingBrackets": "always",
+    "editor.autoClosingOvertype": "always",
+    "editor.autoClosingQuotes": "always",
+    "editor.autoIndent": "brackets",
+    "editor.bracketPairColorization.enabled": true,
+    "editor.defaultFormatter": "formulahendry.auto-close-tag",
+    "editor.guides.bracketPairs": "active",
+    "editor.tabCompletion": "onlySnippets",
+    "editor.tabSize": 6,
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "eslint.alwaysShowStatus": true,
+    "eslint.debug": true,
+    "eslint.format.enable": true
+}

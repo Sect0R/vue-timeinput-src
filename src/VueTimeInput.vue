@@ -6,12 +6,14 @@
       id="time-field"
       v-model="numberValue"
       @paste.prevent
-      @keypress="onChange($event)"
-      @keydown.delete="removeValue($event)"
-      maxlength=""
-      autocomplete="off"
+      @keypress.prevent="onChange($event)"
+      @keydown.prevent.delete="removeValue($event)"
+      :maxlength="maxLength"
+      :autocomplete="getAttrs('off')"
     />
-    <button class="second-button" @click="showSecond($event)">
+    <button
+    class="second-button"
+    @click="showSecond($event)">
       Show seconds
     </button>
   </div>
@@ -28,11 +30,14 @@ export default {
       type: String,
       default: null,
     },
+    getAttrs: {
+      type: Function,
+      default: null,
+    },
   },
   data() {
     return {
       numberValue: this.value,
-      showSeconds: false,
     };
   },
   computed: {
@@ -44,15 +49,15 @@ export default {
     showSecond(event) {
       this.showSeconds = !this.showSeconds;
       if (this.showSeconds) {
-        (this.numberValue = '00:00:00');
+        this.numberValue = this.value + ':00';
       } else {
-        this.numberValue = '00:00';
+        this.numberValue = this.value.substr(0, 5);
       }
       this.$emit('changeTime', this.numberValue);
+      this.$emit('getTimeState', this.showSeconds);
       return this.showSeconds;
     },
     onChange(event) {
-      event.preventDefault();
       const inputEl = this.$refs.input;
       const value = this.value.split('');
       const positionCursor = inputEl.selectionStart;
@@ -64,10 +69,6 @@ export default {
       }
 
       switch (true) {
-        case positionCursor === 0 && keyValue <= 2:
-          value[0] = keyValue;
-          newPositionCursor;
-          break;
         case positionCursor === 0 && keyValue > 2:
           value[0] = 0;
           value[1] = keyValue;
@@ -81,16 +82,8 @@ export default {
           value[1] = keyValue;
           newPositionCursor + 2;
           break;
-        case positionCursor === 3 && keyValue <= 5:
-          value[3] = keyValue;
-          newPositionCursor;
-          break;
         case positionCursor === 3 && keyValue > 5:
           value[3] = 0;
-          value[4] = keyValue;
-          newPositionCursor;
-          break;
-        case positionCursor === 4:
           value[4] = keyValue;
           newPositionCursor;
           break;
@@ -110,7 +103,15 @@ export default {
           value[7] = keyValue;
           newPositionCursor;
           break;
-      }
+        default:
+          if (positionCursor === 0 ||
+              positionCursor === 3 ||
+              positionCursor === 4) {
+            value[positionCursor] = keyValue;
+            newPositionCursor;
+          }
+          break;
+      };
 
       this.numberValue = value.join('');
       this.$emit('changeTime', this.numberValue);
@@ -120,65 +121,50 @@ export default {
       });
     },
     removeValue(event) {
-      event.preventDefault();
       const inputEl = this.$refs.input;
       const value = this.value.split('');
       const positionCursor = inputEl.selectionEnd;
       const keyValue = event.key;
-      const newPositionCursor = positionCursor + 1;
+      let newPositionCursor = positionCursor + 1;
 
       if (
-        (positionCursor === 5 && !this.showSeconds && keyValue === 'Delete') ||
+        (positionCursor === 5 && !this.showSecond && keyValue === 'Delete') ||
         (positionCursor === 8 && keyValue === 'Delete') ||
         (positionCursor === 0 && keyValue === 'Backspace')
       ) {
         return;
       }
 
-      switch (true) {
-        case keyValue === 'Backspace' &&
-        positionCursor !== 0 && value[positionCursor - 1] !== ':':
-          let newPositionCursor = positionCursor - 1;
-          value[newPositionCursor] = 0;
-          newPositionCursor;
+      switch (keyValue) {
+        case 'Backspace':
+          if (positionCursor !== 0 && value[positionCursor - 1] !== ':') {
+            newPositionCursor = positionCursor - 1;
+            value[newPositionCursor] = 0;
+            newPositionCursor = newPositionCursor;
+          } else if (value[positionCursor + 1] !== ':') {
+            newPositionCursor = positionCursor - 1;
+            newPositionCursor = newPositionCursor;
+          }
           break;
-        case keyValue === 'Delete' &&
-        value[positionCursor] !== ':':
-          newPositionCursor = positionCursor - 1;
-          newPositionCursor + 1;
-          value[newPositionCursor + 1] = 0;
-          newPositionCursor + 2;
-          break;
-        case keyValue === 'Backspace' &&
-        value[positionCursor + 1] !== ':':
-          newPositionCursor = positionCursor - 1;
-          newPositionCursor;
-          break;
-        case keyValue === 'Delete' &&
-        value[positionCursor - 1] !== ':':
-          newPositionCursor = positionCursor + 1;
-          newPositionCursor;
+        case 'Delete':
+          if (value[positionCursor] !== ':') {
+            newPositionCursor = positionCursor - 1;
+            newPositionCursor = newPositionCursor + 1;
+            value[newPositionCursor] = 0;
+            newPositionCursor = newPositionCursor + 1;
+          } else if (value[positionCursor - 1] !== ':') {
+            newPositionCursor = positionCursor + 1;
+            newPositionCursor = newPositionCursor;
+          }
           break;
       }
 
       this.numberValue = value.join('');
       this.$emit('changeTime', this.numberValue);
 
-      if (keyValue === 'Delete') {
-        this.$nextTick(() => {
-          inputEl.setSelectionRange(
-              newPositionCursor,
-              newPositionCursor,
-          );
-        });
-      } else {
-        this.$nextTick(() => {
-          inputEl.setSelectionRange(
-              newPositionCursor - 2,
-              newPositionCursor - 2,
-          );
-        });
-      };
+      this.$nextTick(() => {
+        inputEl.setSelectionRange(newPositionCursor, newPositionCursor);
+      });
     },
   },
 };
