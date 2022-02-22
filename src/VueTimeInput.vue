@@ -1,21 +1,17 @@
 <template>
-  <div class="input-block">
-    <input
-      type="text"
-      ref="input"
-      id="time-field"
-      v-model="numberValue"
-      @paste.prevent
-      @keypress.prevent="onChange($event)"
-      @keydown.prevent.delete="removeValue($event)"
-      :maxlength="maxLength"
-      :autocomplete="getAttrs('off')"
-    />
-    <button
-    class="second-button"
-    @click="showSecond($event)">
-      Show seconds
-    </button>
+  <div>
+      <slot name="input">
+        <input
+          type="text"
+          ref="input"
+          v-model="numberValue"
+          @paste.prevent
+          @keypress.prevent="onChange($event)"
+          @keydown.prevent.delete="removeValue($event)"
+          :maxlength="maxLength"
+          :autocomplete="getAttr('off')"
+        />
+      </slot>
   </div>
 </template>
 
@@ -30,32 +26,24 @@ export default {
       type: String,
       default: null,
     },
-    getAttrs: {
-      type: Function,
-      default: null,
-    },
   },
   data() {
     return {
       numberValue: this.value,
+      showSeconds: false,
     };
   },
   computed: {
     maxLength() {
       return this.numberValue.length;
     },
+    showSecond() {
+      return this.numberValue.length > 5;
+    },
   },
   methods: {
-    showSecond(event) {
-      this.showSeconds = !this.showSeconds;
-      if (this.showSeconds) {
-        this.numberValue = this.value + ':00';
-      } else {
-        this.numberValue = this.value.substr(0, 5);
-      }
-      this.$emit('changeTime', this.numberValue);
-      this.$emit('getTimeState', this.showSeconds);
-      return this.showSeconds;
+    getAttr(value) {
+      return value;
     },
     onChange(event) {
       const inputEl = this.$refs.input;
@@ -74,41 +62,33 @@ export default {
           value[1] = keyValue;
           newPositionCursor = 3;
           break;
-        case positionCursor === 1 && keyValue > 3 && value[0] < 2:
+        case positionCursor === 1 && keyValue > 0 && value[0] < 2:
           value[1] = keyValue;
           newPositionCursor = 3;
           break;
-        case positionCursor === 1 && keyValue <= 3:
+        case positionCursor === 1 && keyValue <= 3 && value[0] >= 2:
           value[1] = keyValue;
-          newPositionCursor + 2;
+          newPositionCursor = 3;
           break;
         case positionCursor === 3 && keyValue > 5:
           value[3] = 0;
           value[4] = keyValue;
-          newPositionCursor;
-          break;
-        case this.showSeconds && positionCursor === 5:
-          newPositionCursor;
           break;
         case positionCursor === 6 && keyValue <= 5:
           value[6] = keyValue;
-          newPositionCursor;
           break;
         case positionCursor === 6 && keyValue > 5:
           value[6] = 0;
           value[7] = keyValue;
-          newPositionCursor;
           break;
         case positionCursor === 7:
           value[7] = keyValue;
-          newPositionCursor;
           break;
         default:
           if (positionCursor === 0 ||
               positionCursor === 3 ||
               positionCursor === 4) {
             value[positionCursor] = keyValue;
-            newPositionCursor;
           }
           break;
       };
@@ -127,8 +107,11 @@ export default {
       const keyValue = event.key;
       let newPositionCursor = positionCursor + 1;
 
+
       if (
-        (positionCursor === 5 && !this.showSecond && keyValue === 'Delete') ||
+        (positionCursor === 5 &&
+         this.numberValue.length === 5 &&
+         keyValue === 'Delete') ||
         (positionCursor === 8 && keyValue === 'Delete') ||
         (positionCursor === 0 && keyValue === 'Backspace')
       ) {
@@ -171,4 +154,5 @@ export default {
 </script>
 
 <style>
+
 </style>
