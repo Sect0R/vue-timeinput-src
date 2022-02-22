@@ -39,7 +39,6 @@ export default {
     },
     showSecond() {
       return this.numberValue.length > 5;
-    },
   },
   methods: {
     getAttr(value) {
