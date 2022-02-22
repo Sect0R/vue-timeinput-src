@@ -1,17 +1,16 @@
 <template>
   <div>
-      <slot name="input">
-        <input
-          type="text"
-          ref="input"
-          v-model="numberValue"
-          @paste.prevent
-          @keypress.prevent="onChange($event)"
-          @keydown.prevent.delete="removeValue($event)"
-          :maxlength="maxLength"
-          :autocomplete="getAttr('off')"
-        />
-      </slot>
+      <input
+        type="text"
+        ref="input"
+        v-model="numberValue"
+        v-bind='$attrs'
+        @paste.prevent
+        @keypress.prevent="onChange($event)"
+        @keydown.prevent.delete="removeValue($event)"
+        :maxlength="maxLength"
+        :autocomplete="'off'"
+      />
   </div>
 </template>
 
@@ -39,11 +38,9 @@ export default {
     },
     showSecond() {
       return this.numberValue.length > 5;
+    },
   },
   methods: {
-    getAttr(value) {
-      return value;
-    },
     onChange(event) {
       const inputEl = this.$refs.input;
       const value = this.value.split('');
@@ -84,13 +81,15 @@ export default {
           value[7] = keyValue;
           break;
         default:
-          if (positionCursor === 0 ||
-              positionCursor === 3 ||
-              positionCursor === 4) {
+          if (
+            positionCursor === 0 ||
+            positionCursor === 3 ||
+            positionCursor === 4
+          ) {
             value[positionCursor] = keyValue;
           }
           break;
-      };
+      }
 
       this.numberValue = value.join('');
       this.$emit('changeTime', this.numberValue);
@@ -106,11 +105,10 @@ export default {
       const keyValue = event.key;
       let newPositionCursor = positionCursor + 1;
 
-
       if (
         (positionCursor === 5 &&
-         this.numberValue.length === 5 &&
-         keyValue === 'Delete') ||
+          this.numberValue.length === 5 &&
+          keyValue === 'Delete') ||
         (positionCursor === 8 && keyValue === 'Delete') ||
         (positionCursor === 0 && keyValue === 'Backspace')
       ) {
@@ -153,5 +151,4 @@ export default {
 </script>
 
 <style>
-
 </style>
