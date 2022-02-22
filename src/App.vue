@@ -2,10 +2,7 @@
   <div id='app'>
     <vue-time-input
     v-model="value"
-    :getAttrs="addAttrs"
-    @getTimeState="showSeconds = $event"
     ></vue-time-input>
-    <button @click="showProps()">Click</button>
   </div>
 </template>
 
@@ -16,20 +13,11 @@ export default {
   name: 'app',
   data() {
     return {
-      value: '00:00',
-      showSeconds: false,
+      value: '00:00:00',
     };
   },
   components: {
     VueTimeInput: Input,
-  },
-  methods: {
-    showProps() {
-      console.log(this.showSeconds, this.value);
-    },
-    addAttrs(value) {
-      return value;
-    },
   },
 };
 </script>
