@@ -32,6 +32,12 @@ export default {
       showSeconds: false,
     };
   },
+  created() {
+    if (this.numberValue === null || this.value === '') {
+      return this.numberValue = '00:00';
+    }
+    return this.numberValue;
+  },
   computed: {
     maxLength() {
       return this.numberValue.length;

@@ -13,7 +13,7 @@ export default {
   name: 'app',
   data() {
     return {
-      value: '00:00:00',
+      value: '',
     };
   },
   components: {
