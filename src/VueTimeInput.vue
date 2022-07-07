@@ -1,22 +1,22 @@
 <template>
   <div>
-      <input
-        type="text"
-        ref="input"
-        v-model="numberValue"
-        v-bind='$attrs'
-        @paste.prevent
-        @keypress.prevent="onChange($event)"
-        @keydown.prevent.delete="removeValue($event)"
-        :maxlength="maxLength"
-        :autocomplete="'off'"
-      />
+    <input
+      ref="input"
+      v-model="numberValue"
+      type="text"
+      v-bind="$attrs"
+      :maxlength="maxLength"
+      :autocomplete="'off'"
+      @paste.prevent
+      @keypress.prevent="onChange($event)"
+      @keydown.prevent.delete="removeValue($event)"
+    >
   </div>
 </template>
 
 <script>
 export default {
-  model: {
+    model: {
     prop: 'value',
     event: 'changeTime',
   },
@@ -32,12 +32,6 @@ export default {
       showSeconds: false,
     };
   },
-  created() {
-    if (this.numberValue === null || this.value === '') {
-      return this.numberValue = '00:00';
-    }
-    return this.numberValue;
-  },
   computed: {
     maxLength() {
       return this.numberValue.length;
@@ -45,6 +39,12 @@ export default {
     showSecond() {
       return this.numberValue.length > 5;
     },
+  },
+  created() {
+    if (this.numberValue === null || this.value === '') {
+      return this.numberValue = '00:00';
+    }
+    return this.numberValue;
   },
   methods: {
     onChange(event) {
@@ -126,10 +126,10 @@ export default {
           if (positionCursor !== 0 && value[positionCursor - 1] !== ':') {
             newPositionCursor = positionCursor - 1;
             value[newPositionCursor] = 0;
-            newPositionCursor = newPositionCursor;
+            // newPositionCursor = newPositionCursor;
           } else if (value[positionCursor + 1] !== ':') {
             newPositionCursor = positionCursor - 1;
-            newPositionCursor = newPositionCursor;
+            // newPositionCursor = newPositionCursor;
           }
           break;
         case 'Delete':
@@ -140,7 +140,7 @@ export default {
             newPositionCursor = newPositionCursor + 1;
           } else if (value[positionCursor - 1] !== ':') {
             newPositionCursor = positionCursor + 1;
-            newPositionCursor = newPositionCursor;
+            // newPositionCursor = newPositionCursor;
           }
           break;
       }
