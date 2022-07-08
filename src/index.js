@@ -2,7 +2,7 @@ import VueTimeInput from './VueTimeInput';
 
 const VueTimeInputWrap = {
   install(Vue, options) {
-    Vue.component(VueTimeInput, VueTimeInput);
+    Vue.component('VueTimeInput', VueTimeInput);
   }
 };
 
