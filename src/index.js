@@ -1,21 +1,13 @@
 import VueTimeInput from './VueTimeInput';
 
-class VueTimeInputClass {
-  component;
-
-  initComponent(component) {
-    this.component = component;
+const VueTimeInputWrap = {
+  install(Vue, options) {
+    Vue.component(VueTimeInput, VueTimeInput);
   }
+};
+
+if (typeof window !== 'undefined' && window.Vue) {
+  window.Vue.use(VueTimeInputWrap);
 }
-
-function Install(Vue, installOptions) {
-  const mmClass = new VueTimeInputClass();
-
-  const init = Vue.extend(VueTimeInput);
-  const component = new init({});
-
-  mmClass.initComponent(component);
-}
-
-export default Install;
+export default VueTimeInputWrap;
 
