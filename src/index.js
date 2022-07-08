@@ -1,6 +1,6 @@
 import VueTimeInput from './VueTimeInput';
 
-class VueTimeInputClass {
+class VueTimeInput {
   component;
 
   initComponent(component) {
@@ -9,7 +9,7 @@ class VueTimeInputClass {
 }
 
 function Install(Vue, installOptions) {
-  const mmClass = new VueTimeInputClass();
+  const mmClass = new VueTimeInput();
 
   const init = Vue.extend(VueTimeInput);
   const component = new init({});
