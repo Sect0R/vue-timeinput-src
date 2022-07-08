@@ -1,13 +1,23 @@
 import VueTimeInput from './VueTimeInput';
 
-const VueTimeInputWrap = {
-  install(Vue, options) {
-    Vue.component('VueTimeInput', VueTimeInput);
-  }
+export function install(Vue) {
+  if (install.installed) return;
+  install.installed = true;
+  Vue.component('VueTimeInput', VueTimeInput);
+}
+
+const plugin = {
+  install
 };
 
-if (typeof window !== 'undefined' && window.Vue) {
-  window.Vue.use(VueTimeInputWrap);
+let GlobalVue = null;
+if (typeof window !== 'undefined') {
+  GlobalVue = window.Vue;
+} else if (typeof global !== 'undefined') {
+  GlobalVue = global.Vue;
 }
-export default VueTimeInputWrap;
+if (GlobalVue) {
+  GlobalVue.use(plugin);
+}
 
+export default VueTimeInput;
