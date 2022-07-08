@@ -21,3 +21,5 @@ if (GlobalVue) {
 }
 
 export default VueTimeInput;
+
+console.log(VueTimeInput);
